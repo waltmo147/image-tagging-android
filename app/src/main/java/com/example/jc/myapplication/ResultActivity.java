@@ -59,7 +59,7 @@ public class ResultActivity extends AppCompatActivity {
         imageView.setImageBitmap(queryImage);
         Gson gson = new Gson();
         response = gson.fromJson(json, Response.class);
-        viewSwitcher = (ViewSwitcher) findViewById(R.id.viewSwitcher);
+        viewSwitcher = findViewById(R.id.viewSwitcher);
         View nextView = viewSwitcher.getNextView();
 
         flatView = findViewById(R.id.gridViewFlat);
@@ -132,8 +132,8 @@ public class ResultActivity extends AppCompatActivity {
                 String temp = response.getRank_path()[i][0].equals(".DS_Store") ? response.getRank_path()[i][1] : response.getRank_path()[i][0];
                 String path = response.getRankArray()[i][0] + "/" + temp;
                 url = "/Volumes/WALTER/android-model403/tf_files/ImageNet200/" + path + "/";
-                URL url1  = NetworkUtilities.buildURL(url);
-                Bitmap img = NetworkUtilities.getBitmapFromURL(url1);
+//                URL url1  = NetworkUtilities.buildURL(url);
+                Bitmap img = NetworkUtilities.getBitmapFromURL(null);
                 FlatItem flatItem = new FlatItem(response.getRankArray()[i][1], response.getRankArray()[i][2], img);
                 flatItems.add(flatItem);
             }
@@ -146,8 +146,8 @@ public class ResultActivity extends AppCompatActivity {
                 if (!response.getNode_path()[i][0].equals("")) {
                     String path = response.getOpt_path()[i][0] + "/" + temp;
                     url = "/Volumes/WALTER/android-model403/tf_files/ImageNet200/" + path + "/";
-                    URL url1  = NetworkUtilities.buildURL(url);
-                    img = NetworkUtilities.getBitmapFromURL(url1);
+//                    URL url1  = NetworkUtilities.buildURL(url);
+                    img = NetworkUtilities.getBitmapFromURL(null);
                 }
 
                 FlatItem flatItem = new FlatItem(response.getOpt_path()[i][1], response.getOpt_path()[i][3], img, response.getOpt_path()[i][2]);
@@ -218,9 +218,9 @@ public class ResultActivity extends AppCompatActivity {
         protected String doInBackground(String... params) {
             String path = response.getRankArray()[0][0] + "/" + response.getRank_path()[0][0];
             url = "/Volumes/WALTER/android-model403/tf_files/ImageNet200/" + path + "/";
-            URL url1  = NetworkUtilities.buildURL(url);
+//            URL url1  = NetworkUtilities.buildURL(url);
 
-            a = NetworkUtilities.getBitmapFromURL(url1);
+            a = NetworkUtilities.getBitmapFromURL(null);
 
             return null;
 

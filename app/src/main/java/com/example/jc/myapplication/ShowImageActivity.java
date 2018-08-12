@@ -102,8 +102,8 @@ public class ShowImageActivity extends AppCompatActivity {
                 }
                 String path = targetID + "/" + temp;
                 String url = "/Volumes/WALTER/android-model403/tf_files/ImageNet200/" + path + "/";
-                URL url1  = NetworkUtilities.buildURL(url);
-                Bitmap img = NetworkUtilities.getBitmapFromURL(url1);
+//                URL url1  = NetworkUtilities.buildURL(url);
+                Bitmap img = NetworkUtilities.getBitmapFromURL(null);
                 imgs.add(img);
             }
             Log.i("showimage", "arraylist size: " + imgs.size());

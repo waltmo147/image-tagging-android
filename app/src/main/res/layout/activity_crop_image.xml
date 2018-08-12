@@ -7,6 +7,25 @@
     android:background="@drawable/background"
     tools:context="com.example.jc.myapplication.CropImageActivity">
 
+    <LinearLayout
+        android:id="@+id/linlaHeaderProgress"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:alpha="0.5"
+        android:background="@color/gray"
+        android:visibility="gone" >
+
+        <ProgressBar
+            android:id="@+id/pbHeaderProgress"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true" >
+        </ProgressBar>
+    </LinearLayout>
+
     <ImageView
         android:id="@+id/croppedImage"
         android:layout_width="309dp"

@@ -5,50 +5,32 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jc.myapplication.GetImage;
-import com.example.jc.myapplication.MainActivity;
-import com.example.jc.myapplication.R;
-import com.example.jc.myapplication.RetrofitInterface;
 //import com.example.jc.myapplication.model.Response;
-import com.google.gson.Gson;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
-import okhttp3.RequestBody;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -65,130 +47,6 @@ public final class NetworkUtilities {
             .connectTimeout(30, TimeUnit.SECONDS)
             .build();
 
-    public static URL buildURL(String path){
-        try{
-            String specificURL = BASE_URL+path;
-            URL queryUrl = new URL(specificURL);
-            return queryUrl;
-        }catch (MalformedURLException e){
-            e.printStackTrace();
-            Log.i("tag","not even parsing url");
-            return null;
-        }
-
-    }
-
-    public static String getObjectType(URL url){
-        String urlString = url.toString();
-        String[] paths = urlString.split("/");
-        return paths[paths.length-1];
-    }
-
-    public static String getResponseFromHttp(URL url){
-
-        HttpURLConnection urlConnection = null;
-
-        try{
-            urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
-            int responseCode=urlConnection.getResponseCode();
-            Log.i("tag",""+responseCode);
-            if(responseCode == HttpsURLConnection.HTTP_OK) {
-                InputStream in = urlConnection.getInputStream();
-                InputStreamReader read = new InputStreamReader(in);
-
-                BufferedReader reader = new BufferedReader(read);
-
-                StringBuffer buf = new StringBuffer("");
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    buf.append(line);
-                }
-                String json = buf.toString();
-                Log.i("tag",""+json);
-                reader.close();
-                return json;
-            }else {
-                return null;
-            }
-
-        }
-        catch (IOException e){
-            Log.i(TAG,"IO EXCEPTION");
-            e.printStackTrace();
-            return null;
-        }
-
-    }
-
-    public static String postHomeworkToServer(URL url, Bitmap targetImage){
-
-        HttpURLConnection urlConnection = null;
-
-        try{
-
-            urlConnection = (HttpURLConnection)url.openConnection();
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
-            urlConnection.setConnectTimeout(30000);
-            urlConnection.setDoOutput(true);
-
-            String imageString = getBase64StringFromBitmap(targetImage);
-
-            JSONObject body = new JSONObject();
-            body.put("image", imageString);
-
-
-            DataOutputStream os = new DataOutputStream(urlConnection.getOutputStream());
-            OutputStreamWriter wr = new OutputStreamWriter(urlConnection.getOutputStream());
-            wr.write(body.toString());
-            wr.flush();
-            wr.close();
-//            os.write(imageString);
-//            os.flush();
-//            os.close();
-
-            int responseCode=urlConnection.getResponseCode();
-            Log.i("tag",""+responseCode);
-            if(responseCode == HttpsURLConnection.HTTP_OK) {
-                InputStream in = urlConnection.getInputStream();
-                InputStreamReader read = new InputStreamReader(in);
-
-                BufferedReader reader = new BufferedReader(read);
-
-                StringBuffer buf = new StringBuffer("");
-                String line = "";
-                while ((line = reader.readLine()) != null) {
-                    buf.append(line);
-                }
-                String json = buf.toString();
-                Log.i("tag",""+json);
-                reader.close();
-                return json;
-            }else {
-                return null;
-            }
-
-        }catch(IOException e){
-            e.printStackTrace();
-            Log.i(TAG,"IOEXCEPT");
-            return null;
-        }
-        catch(Exception e){
-            e.printStackTrace();
-            Log.i(TAG,e.getMessage());
-            return null;
-        }
-//        catch(JSONException e){
-//            e.printStackTrace();
-//            Log.i(TAG,"JSONEXCEPT");
-//            return null;
-//        }
-        finally{
-            urlConnection.disconnect();
-        }
-    }
 
 
     public static byte[] getStringFromBitmap(Bitmap bitmapPicture) {
@@ -244,50 +102,6 @@ public final class NetworkUtilities {
     }
 
 
-//    public static Response uploadImage(byte[] imageBytes, Context context) {
-//
-//        final Context context1 = context;
-//
-//        Retrofit retrofit = new Retrofit.Builder()
-//                .baseUrl(BASE_URL)
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .client(okHttpClient)
-//                .build();
-//
-//        RetrofitInterface retrofitInterface = retrofit.create(RetrofitInterface.class);
-//
-//        RequestBody requestFile = RequestBody.create(MediaType.parse("image/*"), imageBytes);
-//
-//        MultipartBody.Part body = MultipartBody.Part.createFormData("image", "image.jpg", requestFile);
-//        Call<Response> call = retrofitInterface.uploadImage(body);
-//
-//        Response result = null;
-//
-////        call.enqueue(new Callback<Response>() {
-////            @Override
-////            public void onResponse(Call<Response> call, retrofit2.Response<Response> response) {
-////                Log.i("tag", "Success: "+response.body().toString());
-////                Response responseBody = response.body();
-////                result = response.body();
-////            }
-////
-////            @Override
-////            public void onFailure(Call<Response> call, Throwable t) {
-////                Toast.makeText(context1, "Failed connecting the server", Toast.LENGTH_LONG).show();
-////                Log.d("tag", "onFailure: "+t.getLocalizedMessage());
-////
-////            }
-////        });
-//
-//        try {
-//            result = call.execute().body();
-//        }
-//        catch (IOException e) {
-//            Log.i("retrofit call","IOEXCEPTION");
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
 
     public static Bitmap downloadImage(String url) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -321,7 +135,7 @@ public final class NetworkUtilities {
      */
     public static void uploadImageWithVolley(Context context, Bitmap image) {
         final String imageString = getBase64StringFromBitmap(image);
-        final PostResponseListener mPostResponse = new UploadImageResponseListener(context);
+        final ResponseListener mPostResponse = new UploadImageResponseListener(context);
         mPostResponse.requestStarted();
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest postRequest = new StringRequest(Request.Method.POST, Constants.UPLOAD_IMAGE_URL,
@@ -337,11 +151,11 @@ public final class NetworkUtilities {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
-                        if (error == null) {
-                            Log.d("Error.Response", "null");
-                        }
-                        else {
+                        try {
                             Log.d("Error.Response", error.getMessage());
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -361,6 +175,64 @@ public final class NetworkUtilities {
         queue.add(postRequest);
 
     }
+
+    public static String generateUrl(String baseUrl, Map<String, String> params) {
+        baseUrl += "?";
+        if (params.size() > 0) {
+            for (Map.Entry<String, String> parameter: params.entrySet()) {
+                if (parameter.getKey().trim().length() > 0)
+                    baseUrl += "&" + parameter.getKey() + "=" + parameter.getValue();
+            }
+        }
+        return baseUrl;
+    }
+
+    public static void downloadImageWithVolley(final Context context, String tagId, int num) {
+        final ResponseListener mGetResponse = new DownloadImageResponseListener(context);
+        // prepare the Request
+        if (context == null) {
+            Log.d(TAG, "downloadImageWithVolley: context is null");
+        }
+        RequestQueue queue = Volley.newRequestQueue(context);
+        
+        mGetResponse.requestStarted();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("tag_id", tagId);
+        params.put("num", "" + num);
+
+        String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
+
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        mGetResponse.requestCompleted(response);
+                        Log.d("Response", response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        try {
+                            Log.d("Error.Response", error.getMessage());
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        // add it to the RequestQueue
+        queue.add(getRequest);
+
+    }
+
 
 
 }

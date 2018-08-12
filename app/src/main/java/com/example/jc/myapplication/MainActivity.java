@@ -45,17 +45,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setTitle("Welcome!");
-//        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
-//        new getJson().execute("");
         gallaryButton = findViewById(R.id.gallaryButton);
         cameraButton = findViewById(R.id.cameraButton);
 
     }
 
-    public void onClick(View view){
+    public void onClick(View view) {
 
-        switch (view.getId()){
+        switch (view.getId()) {
 
             case R.id.gallaryButton:
                 openGallary();
@@ -89,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -106,9 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
 
             }
-        }
-        catch (Exception e){
-            Log.i("Gallary","EXCEPTION");
+        } catch (Exception e) {
+            Log.i("Gallary", "EXCEPTION");
             e.printStackTrace();
         }
 
@@ -123,66 +118,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    public static class getJson extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-            URL url  = NetworkUtilities.buildURL("");
-            String json = NetworkUtilities.getResponseFromHttp(url);
-
-            return null;
-
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-        }
-    }
-
-    public class postJson extends AsyncTask<String, Void, String> {
-        Context context;
-
-        public postJson(Context context) {
-            this.context = context;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected String doInBackground(String... params) {
-
-            URL url  = NetworkUtilities.buildURL("");
-            String json = NetworkUtilities.postHomeworkToServer(url, targetImage);
-            try {
-                JSONObject obj = new JSONObject(json);
-                Log.d("My App", obj.toString());
-                if (json != null) {
-                    Intent intent = new Intent(context, ResultActivity.class);
-                    intent.putExtra("json", json);
-                    startActivity(intent);
-                }
-            } catch (Throwable t) {
-                Log.e("My App", "Could not parse malformed JSON: \"" + json + "\"");
-            }
-
-            return null;
-
-        }
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-
-        }
-    }
 }

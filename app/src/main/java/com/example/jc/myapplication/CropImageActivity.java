@@ -16,6 +16,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.jc.myapplication.model.Response;
@@ -38,6 +41,7 @@ public class CropImageActivity extends AppCompatActivity {
     private static final int PICK_IMAGE = 100;
     Uri imageUri;
     Bitmap targetImage;
+    LinearLayout linlaHeaderProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +50,13 @@ public class CropImageActivity extends AppCompatActivity {
 
         setTitle("Edit Image");
 
-        //new getJson().execute("");
         cropButton = findViewById(R.id.cropButton);
         continueButton = findViewById(R.id.continueButton);
         imageView = findViewById(R.id.croppedImage);
-//        imageUri = (Uri) getIntent().getExtras().get(MediaStore.EXTRA_OUTPUT);
         String method = getIntent().getExtras().getString("uri");
+
+        linlaHeaderProgress = (LinearLayout) findViewById(R.id.linlaHeaderProgress);
+
 
         if (method.equals("gallery")) {
             try {
@@ -71,8 +76,26 @@ public class CropImageActivity extends AppCompatActivity {
                     .start(this);
         }
 
+    }
 
+    public void jumpToResultActivity(String result) {
+        Intent intent = new Intent();
+        intent.setClass(this, ResultActivity.class);
+        SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+        prefsEditor.putString("img", Base64.encodeToString(NetworkUtilities.getStringFromBitmap(targetImage), Base64.DEFAULT));
+        prefsEditor.putString("result", result);
+        prefsEditor.apply();
+        startActivity(intent);
+    }
 
+    public void openProgressBar() {
+        linlaHeaderProgress.bringToFront();
+        linlaHeaderProgress.setVisibility(View.VISIBLE);
+    }
+
+    public void closeProgressBar() {
+        linlaHeaderProgress.setVisibility(View.GONE);
     }
 
 
@@ -113,12 +136,16 @@ public class CropImageActivity extends AppCompatActivity {
 
             case R.id.continueButton:
 //                new MainActivity.getJson().execute("");
-                NetworkUtilities.uploadImageWithVolley(getBaseContext(), targetImage);
+                NetworkUtilities.uploadImageWithVolley(this, targetImage);
 //                new loadingDialog(this).execute();
                 break;
         }
 
 //        startActivity(intent);
+    }
+
+    public Bitmap getTargetImage() {
+        return targetImage;
     }
 
 
@@ -158,10 +185,7 @@ public class CropImageActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             /* Do yourxec Task ( Load from URL) and return value */
-            URL url  = NetworkUtilities.buildURL("");
-//            String json = NetworkUtilities.postHomeworkToServer(url, targetImage);
             NetworkUtilities.uploadImageWithVolley(context, targetImage);
-//            response = NetworkUtilities.uploadImage(NetworkUtilities.getStringFromBitmap(targetImage), context);
 
             return null;
         }
@@ -194,6 +218,8 @@ public class CropImageActivity extends AppCompatActivity {
                     /* Do your Post -Execute Tasks */
         }
     }
+
+
 
 
 }

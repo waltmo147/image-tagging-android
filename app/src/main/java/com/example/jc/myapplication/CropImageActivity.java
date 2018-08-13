@@ -22,6 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.jc.myapplication.model.Response;
+import com.example.jc.myapplication.util.JsonUtilities;
 import com.example.jc.myapplication.util.NetworkUtilities;
 import com.google.gson.Gson;
 import com.theartofdev.edmodo.cropper.CropImage;
@@ -81,11 +82,8 @@ public class CropImageActivity extends AppCompatActivity {
     public void jumpToResultActivity(String result) {
         Intent intent = new Intent();
         intent.setClass(this, ResultActivity.class);
-        SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
-        SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-        prefsEditor.putString("img", Base64.encodeToString(NetworkUtilities.getStringFromBitmap(targetImage), Base64.DEFAULT));
-        prefsEditor.putString("result", result);
-        prefsEditor.apply();
+        intent.putExtra("data", result);
+        intent.putExtra("img", Base64.encodeToString(JsonUtilities.getStringFromBitmap(targetImage), Base64.DEFAULT));
         startActivity(intent);
     }
 
@@ -149,75 +147,73 @@ public class CropImageActivity extends AppCompatActivity {
     }
 
 
-
-
-    public class loadingDialog extends AsyncTask<Void,Void, Void> {
-        Context context;
-        ProgressDialog progressDialog;
-        Intent intent;
-        Response response;
-
-        public loadingDialog(Context context) {
-
-            this.context = context;
-            progressDialog = new ProgressDialog(context);
-
-        }
-
-
-        /* ***********************************
-         * Pre-Execute Method
-         * ********************************** */
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            intent = new Intent();
-            intent.setClass(context, ResultActivity.class);
-            this.progressDialog.setMessage("Calculating");
-            this.progressDialog.show();
-
-        /* Do your Pre-Execute Configuration */
-        }
-
-        /* ***********************************
-         * Execute Method
-         * ********************************** */
-        @Override
-        protected Void doInBackground(Void... arg0) {
-            /* Do yourxec Task ( Load from URL) and return value */
-            NetworkUtilities.uploadImageWithVolley(context, targetImage);
-
-            return null;
-        }
-
-        /* ***********************************
-         * Post-Execute Method
-         * ********************************** */
-        @Override
-        protected void onPostExecute(Void result) {
-            progressDialog.dismiss();
-            if (response != null) {
-                Gson gson = new Gson();
-                String gsonString = gson.toJson(response, Response.class);
-                SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
-                SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
-                prefsEditor.putString("img", Base64.encodeToString(NetworkUtilities.getStringFromBitmap(targetImage), Base64.DEFAULT));
-                prefsEditor.putString("result", gsonString);
-                prefsEditor.apply();
-
-                startActivity(intent);
-                super.onPostExecute(result);
-            }
-
-            else {
-                Toast.makeText(context, "Failed connecting the server", Toast.LENGTH_LONG).show();
-                Log.d("tag", "onFailure");
-            }
-
-
-                    /* Do your Post -Execute Tasks */
-        }
-    }
+//    public class loadingDialog extends AsyncTask<Void,Void, Void> {
+//        Context context;
+//        ProgressDialog progressDialog;
+//        Intent intent;
+//        Response response;
+//
+//        public loadingDialog(Context context) {
+//
+//            this.context = context;
+//            progressDialog = new ProgressDialog(context);
+//
+//        }
+//
+//
+//        /* ***********************************
+//         * Pre-Execute Method
+//         * ********************************** */
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            intent = new Intent();
+//            intent.setClass(context, ResultActivity.class);
+//            this.progressDialog.setMessage("Calculating");
+//            this.progressDialog.show();
+//
+//        /* Do your Pre-Execute Configuration */
+//        }
+//
+//        /* ***********************************
+//         * Execute Method
+//         * ********************************** */
+//        @Override
+//        protected Void doInBackground(Void... arg0) {
+//            /* Do yourxec Task ( Load from URL) and return value */
+//            NetworkUtilities.uploadImageWithVolley(context, targetImage);
+//
+//            return null;
+//        }
+//
+//        /* ***********************************
+//         * Post-Execute Method
+//         * ********************************** */
+//        @Override
+//        protected void onPostExecute(Void result) {
+//            progressDialog.dismiss();
+//            if (response != null) {
+//                Gson gson = new Gson();
+//                String gsonString = gson.toJson(response, Response.class);
+//                SharedPreferences sharedPreferences = getSharedPreferences("Data", Context.MODE_PRIVATE);
+//                SharedPreferences.Editor prefsEditor = sharedPreferences.edit();
+//                prefsEditor.putString("img", Base64.encodeToString(NetworkUtilities.getStringFromBitmap(targetImage), Base64.DEFAULT));
+//                prefsEditor.putString("result", gsonString);
+//                prefsEditor.apply();
+//
+//                startActivity(intent);
+//                super.onPostExecute(result);
+//            }
+//
+//            else {
+//                Toast.makeText(context, "Failed connecting the server", Toast.LENGTH_LONG).show();
+//                Log.d("tag", "onFailure");
+//            }
+//
+//
+//                    /* Do your Post -Execute Tasks */
+//        }
+//    }
 
 
 

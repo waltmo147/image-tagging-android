@@ -1,11 +1,20 @@
 package com.example.jc.myapplication.util;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 
 /**
@@ -23,6 +32,73 @@ public final class JsonUtilities {
             return null;
         }
 
+    }
+
+    public static Bitmap getBitmapFromGetResponse(JSONObject jsonObject) {
+
+        try {
+//            JSONObject jsonObject = new JSONObject(json);
+            String imageString = jsonObject.getString("image");
+            Bitmap image = getBitmapFromString(imageString);
+            return image;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
+    public static byte[] getStringFromBitmap(Bitmap bitmapPicture) {
+        /*
+         * This functions converts Bitmap picture to a string which can be
+         * JSONified.
+         * */
+        final int COMPRESSION_QUALITY = 100;
+        String encodedImage;
+        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
+        bitmapPicture.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY,byteArrayBitmapStream);
+        byte[] b = byteArrayBitmapStream.toByteArray();
+        return b;
+    }
+
+    public static String getBase64StringFromBitmap(Bitmap bitmapPicture) {
+        /*
+         * This functions converts Bitmap picture to a string which can be
+         * JSONified.
+         * */
+        final int COMPRESSION_QUALITY = 100;
+        String encodedImage;
+        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
+        bitmapPicture.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY,byteArrayBitmapStream);
+        byte[] b = byteArrayBitmapStream.toByteArray();
+        encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
+        return encodedImage;
+    }
+
+    public static Bitmap getBitmapFromString(String jsonString) {
+        /*
+         * This Function converts the String back to Bitmap
+         * */
+        byte[] decodedString = Base64.decode(jsonString, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
+    }
+
+    public static Bitmap getBitmapFromURL(URL url) {
+        try {
+
+            HttpURLConnection connection = (HttpURLConnection) url
+                    .openConnection();
+            connection.setDoInput(true);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap myBitmap = BitmapFactory.decodeStream(input);
+            return myBitmap;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 

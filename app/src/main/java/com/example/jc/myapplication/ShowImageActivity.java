@@ -13,6 +13,7 @@ import android.widget.GridView;
 import android.widget.TextView;
 
 import com.example.jc.myapplication.model.FlatItem;
+import com.example.jc.myapplication.util.JsonUtilities;
 import com.example.jc.myapplication.util.NetworkUtilities;
 import com.google.gson.Gson;
 
@@ -40,10 +41,10 @@ public class ShowImageActivity extends AppCompatActivity {
         String scoreTree = intent.getExtras().getString("scoreTree");
 
         Log.i("showimage", "onCreate: " + scoreTree);
-        Gson gson = new Gson();
-        images = gson.fromJson(intent.getExtras().getString("images"), String[].class);
+//        Gson gson = new Gson();
+//        images = gson.fromJson(intent.getExtras().getString("images"), String[].class);
 
-        Log.i("showimage", "onCreate: " + images.toString());
+//        Log.i("showimage", "onCreate: " + images.toString());
 
 
         setTitle(label);
@@ -54,7 +55,7 @@ public class ShowImageActivity extends AppCompatActivity {
         else
             textView.setText("Flat score: " + score + "  Hierarchical: " + scoreTree);
 
-        new loadImages(this).execute();
+//        new loadImages(this).execute();
     }
 
 
@@ -103,7 +104,7 @@ public class ShowImageActivity extends AppCompatActivity {
                 String path = targetID + "/" + temp;
                 String url = "/Volumes/WALTER/android-model403/tf_files/ImageNet200/" + path + "/";
 //                URL url1  = NetworkUtilities.buildURL(url);
-                Bitmap img = NetworkUtilities.getBitmapFromURL(null);
+                Bitmap img = JsonUtilities.getBitmapFromURL(null);
                 imgs.add(img);
             }
             Log.i("showimage", "arraylist size: " + imgs.size());

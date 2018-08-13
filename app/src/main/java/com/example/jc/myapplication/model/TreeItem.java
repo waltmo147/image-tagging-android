@@ -2,17 +2,27 @@ package com.example.jc.myapplication.model;
 
 import android.graphics.Bitmap;
 
-public class PathItem {
+public class TreeItem {
     private String tag_id;
     private String tag;
     private String tree_score;
     private String flat_score;
+    private Bitmap img;
 
-    public PathItem(String tag_id, String tag, String tree_score, String flat_score) {
+    public TreeItem(String tag, String tree_score, String flat_score, Bitmap img, String tag_id) {
         this.tag = tag;
-        this.tag_id = tag_id;
         this.tree_score = tree_score;
         this.flat_score = flat_score;
+        this.img = img;
+        this.tag_id = tag_id;
+    }
+
+    public String getTag_id() {
+        return tag_id;
+    }
+
+    public void setTag_id(String tag_id) {
+        this.tag_id = tag_id;
     }
 
     public String getTag() {
@@ -39,11 +49,11 @@ public class PathItem {
         this.tag = tag;
     }
 
-    public String getTag_id() {
-        return tag_id;
+    public Bitmap getImg() {
+        return img;
     }
 
-    public void setTag_id(String tag_id) {
-        this.tag_id = tag_id;
+    public void setImg(Bitmap img) {
+        this.img = img;
     }
 }

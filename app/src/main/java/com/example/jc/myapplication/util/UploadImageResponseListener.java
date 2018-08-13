@@ -14,7 +14,7 @@ import com.example.jc.myapplication.model.UploadImageResponse;
 import com.example.jc.myapplication.model.UploadImageResponseBody;
 import com.google.gson.Gson;
 
-public class UploadImageResponseListener implements ResponseListener {
+public class UploadImageResponseListener {
 
     private String response;
     private Context context;
@@ -28,7 +28,7 @@ public class UploadImageResponseListener implements ResponseListener {
         CropImageActivity activity = (CropImageActivity)context;
         activity.openProgressBar();
     }
-    public void requestCompleted(Object result) {
+    public String requestCompleted(Object result) {
         response = (String)result;
         try {
 //            Gson gson = new Gson();
@@ -37,12 +37,11 @@ public class UploadImageResponseListener implements ResponseListener {
             activity.closeProgressBar();
             Log.d("Response", response);
             activity.jumpToResultActivity(response);
-//            String id = result.getData().getRankArray()[0].getTag_id();
-//            NetworkUtilities.downloadImageWithVolley(context, id, 0);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return response;
     }
     public void requestEndedWithError(VolleyError error) {
 

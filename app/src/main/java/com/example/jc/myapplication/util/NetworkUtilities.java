@@ -15,6 +15,9 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jc.myapplication.GetImage;
+import com.example.jc.myapplication.model.FlatItem;
+import com.example.jc.myapplication.model.PathItem;
+import com.example.jc.myapplication.model.TreeItem;
 //import com.example.jc.myapplication.model.Response;
 
 import org.json.JSONObject;
@@ -35,6 +38,8 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static com.example.jc.myapplication.util.JsonUtilities.getBase64StringFromBitmap;
+
 /**
  * Created by JC on 2/24/18.
  */
@@ -46,62 +51,6 @@ public final class NetworkUtilities {
             .readTimeout(30, TimeUnit.SECONDS)
             .connectTimeout(30, TimeUnit.SECONDS)
             .build();
-
-
-
-    public static byte[] getStringFromBitmap(Bitmap bitmapPicture) {
- /*
- * This functions converts Bitmap picture to a string which can be
- * JSONified.
- * */
-        final int COMPRESSION_QUALITY = 100;
-        String encodedImage;
-        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
-        bitmapPicture.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY,byteArrayBitmapStream);
-        byte[] b = byteArrayBitmapStream.toByteArray();
-        return b;
-    }
-
-    public static String getBase64StringFromBitmap(Bitmap bitmapPicture) {
-        /*
-         * This functions converts Bitmap picture to a string which can be
-         * JSONified.
-         * */
-        final int COMPRESSION_QUALITY = 100;
-        String encodedImage;
-        ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
-        bitmapPicture.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY,byteArrayBitmapStream);
-        byte[] b = byteArrayBitmapStream.toByteArray();
-        encodedImage = Base64.encodeToString(b, Base64.DEFAULT);
-        return encodedImage;
-    }
-
-    public static Bitmap getBitmapFromString(String jsonString) {
-/*
-* This Function converts the String back to Bitmap
-* */
-        byte[] decodedString = Base64.decode(jsonString, Base64.DEFAULT);
-        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        return decodedByte;
-    }
-
-    public static Bitmap getBitmapFromURL(URL url) {
-        try {
-
-            HttpURLConnection connection = (HttpURLConnection) url
-                    .openConnection();
-            connection.setDoInput(true);
-            connection.connect();
-            InputStream input = connection.getInputStream();
-            Bitmap myBitmap = BitmapFactory.decodeStream(input);
-            return myBitmap;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-
 
     public static Bitmap downloadImage(String url) {
         Retrofit retrofit = new Retrofit.Builder()
@@ -135,7 +84,7 @@ public final class NetworkUtilities {
      */
     public static void uploadImageWithVolley(Context context, Bitmap image) {
         final String imageString = getBase64StringFromBitmap(image);
-        final ResponseListener mPostResponse = new UploadImageResponseListener(context);
+        final UploadImageResponseListener mPostResponse = new UploadImageResponseListener(context);
         mPostResponse.requestStarted();
         RequestQueue queue = Volley.newRequestQueue(context);
         StringRequest postRequest = new StringRequest(Request.Method.POST, Constants.UPLOAD_IMAGE_URL,
@@ -144,7 +93,6 @@ public final class NetworkUtilities {
                     public void onResponse(String response) {
                         // response
                         mPostResponse.requestCompleted(response);
-
                     }
                 },
                 new Response.ErrorListener() {
@@ -187,19 +135,22 @@ public final class NetworkUtilities {
         return baseUrl;
     }
 
-    public static void downloadImageWithVolley(final Context context, String tagId, int num) {
-        final ResponseListener mGetResponse = new DownloadImageResponseListener(context);
+    public static void downloadFlatImageWithVolley(final Context context,
+                                                   String tagId,
+                                                   final FlatItem flatItem,
+                                                   final DownloadFlatImageResponseListener mGetResponse,
+                                                   RequestQueue queue) {
         // prepare the Request
         if (context == null) {
             Log.d(TAG, "downloadImageWithVolley: context is null");
         }
-        RequestQueue queue = Volley.newRequestQueue(context);
         
         mGetResponse.requestStarted();
 
         Map<String, String> params = new HashMap<>();
         params.put("tag_id", tagId);
-        params.put("num", "" + num);
+        params.put("num", "" + 0);
+        params.put("count", "" + 1);
 
         String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
 
@@ -209,7 +160,7 @@ public final class NetworkUtilities {
                     @Override
                     public void onResponse(JSONObject response) {
                         // display response
-                        mGetResponse.requestCompleted(response);
+                        mGetResponse.requestCompleted(response, flatItem);
                         Log.d("Response", response.toString());
                     }
                 },
@@ -218,6 +169,7 @@ public final class NetworkUtilities {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         // error
+                        mGetResponse.requestEndedWithError(error);
                         try {
                             Log.d("Error.Response", error.getMessage());
                         }
@@ -233,6 +185,106 @@ public final class NetworkUtilities {
 
     }
 
+    public static void downloadTreeImageWithVolley(final Context context,
+                                                   String tagId,
+                                                   final TreeItem treeItem,
+                                                   final DownloadTreeImageResponseListener mGetResponse,
+                                                   RequestQueue queue) {
+        // prepare the Request
+        if (context == null) {
+            Log.d(TAG, "downloadImageWithVolley: context is null");
+        }
+
+        mGetResponse.requestStarted();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("tag_id", tagId);
+        params.put("num", "" + 0);
+        params.put("count", "" + 1);
+
+
+        String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
+
+        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+                new Response.Listener<JSONObject>()
+                {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // display response
+                        mGetResponse.requestCompleted(response, treeItem);
+                        Log.d("Response", response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        mGetResponse.requestEndedWithError(error);
+                        try {
+                            Log.d("Error.Response", error.getMessage());
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        // add it to the RequestQueue
+        queue.add(getRequest);
+
+    }
+
+//    public static void downloadImageChunk(final Context context,
+//                                          String tagId,
+//                                          int offset,
+//                                          int count,
+//                                          final DownloadTreeImageResponseListener mGetResponse,
+//                                          RequestQueue queue) {
+//        if (context == null) {
+//            Log.d(TAG, "downloadImageWithVolley: context is null");
+//        }
+//
+//        mGetResponse.requestStarted();
+//
+//        Map<String, String> params = new HashMap<>();
+//        params.put("tag_id", tagId);
+//        params.put("num", "" + offset);
+//        params.put("count", "" + count);
+//
+//
+//        String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
+//
+//        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
+//                new Response.Listener<JSONObject>()
+//                {
+//                    @Override
+//                    public void onResponse(JSONObject response) {
+//                        // display response
+//                        mGetResponse.requestCompleted(response, treeItem);
+//                        Log.d("Response", response.toString());
+//                    }
+//                },
+//                new Response.ErrorListener()
+//                {
+//                    @Override
+//                    public void onErrorResponse(VolleyError error) {
+//                        // error
+//                        mGetResponse.requestEndedWithError(error);
+//                        try {
+//                            Log.d("Error.Response", error.getMessage());
+//                        }
+//                        catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//        );
+//
+//        // add it to the RequestQueue
+//        queue.add(getRequest);
+//    }
 
 
 }

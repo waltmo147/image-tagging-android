@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.jc.myapplication.model.FlatItem;
+import com.example.jc.myapplication.model.PathItem;
+import com.example.jc.myapplication.model.TreeItem;
 
 import java.util.ArrayList;
 
@@ -17,10 +19,10 @@ import java.util.ArrayList;
  */
 public class TreeAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<FlatItem> results;
+    private ArrayList<TreeItem> results;
     private LayoutInflater mInflater;
 
-    public TreeAdapter(Context context, ArrayList<FlatItem> results) {
+    public TreeAdapter(Context context, ArrayList<TreeItem> results) {
         this.context = context;
         this.results = results;
         this.mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -44,7 +46,7 @@ public class TreeAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        FlatItem item = (FlatItem) getItem(position);
+        TreeItem item = (TreeItem) getItem(position);
         if (convertView == null) {
             convertView = mInflater.inflate(R.layout.tree_list_item, parent, false);
         }
@@ -54,9 +56,14 @@ public class TreeAdapter extends BaseAdapter {
         TextView scoreTree = (TextView) convertView.findViewById(R.id.scoreTree);
         ImageView imageView = convertView.findViewById(R.id.imageViewTree);
 
-        label.setText(item.getLabel());
-        score.setText(item.getScore());
-        scoreTree.setText(item.getScoreTree());
+        Float flatScore = Float.valueOf(item.getFlat_score());
+        score.setText(String.format("%.2f", flatScore * 100) + "%");
+
+        Float treeScore = Float.valueOf(item.getTree_score());
+        scoreTree.setText(String.format("%.2f", treeScore * 100) + "%");
+
+        label.setText(item.getTag());
+
         imageView.setImageBitmap(item.getImg());
 
         return convertView;

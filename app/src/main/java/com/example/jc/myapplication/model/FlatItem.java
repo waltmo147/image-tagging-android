@@ -7,31 +7,24 @@ import android.graphics.Bitmap;
  */
 
 public class FlatItem {
+    private String tag_id;
     private String label;
     private String score;
     private Bitmap img;
-    private String scoreTree;
 
-    public FlatItem(String label, String score, Bitmap img) {
+    public FlatItem(String label, String score, Bitmap img, String tag_id) {
         this.label = label;
         this.score = score;
         this.img = img;
+        this.tag_id = tag_id;
     }
 
-    public String getScoreTree() {
-        return scoreTree;
+    public String getTag_id() {
+        return tag_id;
     }
 
-    public void setScoreTree(String scoreTree) {
-        this.scoreTree = scoreTree;
-    }
-
-    public FlatItem(String label, String score, Bitmap img, String scoreTree) {
-
-        this.label = label;
-        this.score = score;
-        this.img = img;
-        this.scoreTree = scoreTree;
+    public void setTag_id(String tag_id) {
+        this.tag_id = tag_id;
     }
 
     public String getLabel() {

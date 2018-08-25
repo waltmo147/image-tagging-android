@@ -43,7 +43,7 @@ public class DownloadTreeImageResponseListener {
         return null;
     }
     public void requestEndedWithError(VolleyError error) {
-
+        requestPending -= 1;
     }
 
     public void addPathItem(TreeItem treeItem) {

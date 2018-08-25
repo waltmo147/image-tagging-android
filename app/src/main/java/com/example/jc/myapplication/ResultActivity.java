@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -137,6 +138,16 @@ public class ResultActivity extends AppCompatActivity {
                 intent.putExtra("label", flatItems.get(position).getLabel());
                 intent.putExtra("id", flatItems.get(position).getTag_id());
                 intent.putExtra("score", flatItems.get(position).getScore());
+
+
+
+//                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+                ArrayList<String> imgs = new ArrayList<>();
+                for (int i = 0; i < 2; i++) {
+                    imgs.add(JsonUtilities.getBase64StringFromBitmap(flatItems.get(2).getImg()));
+                }
+                intent.putExtra("imgs", imgs);
+
 
                 startActivity(intent); // start Intent
             }

@@ -233,58 +233,57 @@ public final class NetworkUtilities {
 
         // add it to the RequestQueue
         queue.add(getRequest);
-
     }
 
-//    public static void downloadImageChunk(final Context context,
-//                                          String tagId,
-//                                          int offset,
-//                                          int count,
-//                                          final DownloadTreeImageResponseListener mGetResponse,
-//                                          RequestQueue queue) {
-//        if (context == null) {
-//            Log.d(TAG, "downloadImageWithVolley: context is null");
-//        }
-//
-//        mGetResponse.requestStarted();
-//
-//        Map<String, String> params = new HashMap<>();
-//        params.put("tag_id", tagId);
-//        params.put("num", "" + offset);
-//        params.put("count", "" + count);
-//
-//
-//        String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
-//
-//        JsonObjectRequest getRequest = new JsonObjectRequest(Request.Method.GET, url, null,
-//                new Response.Listener<JSONObject>()
-//                {
-//                    @Override
-//                    public void onResponse(JSONObject response) {
-//                        // display response
-//                        mGetResponse.requestCompleted(response, treeItem);
-//                        Log.d("Response", response.toString());
-//                    }
-//                },
-//                new Response.ErrorListener()
-//                {
-//                    @Override
-//                    public void onErrorResponse(VolleyError error) {
-//                        // error
-//                        mGetResponse.requestEndedWithError(error);
-//                        try {
-//                            Log.d("Error.Response", error.getMessage());
-//                        }
-//                        catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                }
-//        );
-//
-//        // add it to the RequestQueue
-//        queue.add(getRequest);
-//    }
+    public static void downloadImageChunk(final Context context,
+                                          String tagId,
+                                          final int offset,
+                                          int count,
+                                          final DownloadImageChunkResponseListener mGetResponse,
+                                          RequestQueue queue) {
+        if (context == null) {
+            Log.d(TAG, "downloadImageWithVolley: context is null");
+        }
+
+        mGetResponse.requestStarted();
+
+        Map<String, String> params = new HashMap<>();
+        params.put("tag_id", tagId);
+        params.put("num", "" + offset);
+        params.put("count", "" + count);
+
+
+        String url = generateUrl(Constants.UPLOAD_IMAGE_URL, params);
+
+        StringRequest getRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>()
+                {
+                    @Override
+                    public void onResponse(String response) {
+                        // display response
+                        mGetResponse.requestCompleted(response, offset);
+                        Log.d("Response", response.toString());
+                    }
+                },
+                new Response.ErrorListener()
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        mGetResponse.requestEndedWithError(error);
+                        try {
+                            Log.d("Error.Response", error.getMessage());
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+        );
+
+        // add it to the RequestQueue
+        queue.add(getRequest);
+    }
 
 
 }

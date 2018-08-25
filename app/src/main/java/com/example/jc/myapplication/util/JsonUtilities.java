@@ -3,7 +3,9 @@ package com.example.jc.myapplication.util;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
 
+import com.example.jc.myapplication.model.ImagesResponse;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -16,6 +18,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by JC on 3/3/18.
@@ -32,6 +35,18 @@ public final class JsonUtilities {
             return null;
         }
 
+    }
+
+    public static ArrayList<Bitmap> getImageListFromGetResponse(String json) {
+        ArrayList<Bitmap> images = new ArrayList<>();
+        Gson gson = new Gson();
+        ImagesResponse response = gson.fromJson(json, ImagesResponse.class);
+        Log.d("JsonUtil", "getImageListFromGetResponse: " + json);
+        for (String image_string : response.getImages()) {
+            Bitmap img = getBitmapFromString(image_string);
+            images.add(img);
+        }
+        return images;
     }
 
     public static Bitmap getBitmapFromGetResponse(JSONObject jsonObject) {

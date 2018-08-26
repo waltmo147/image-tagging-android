@@ -1,5 +1,6 @@
 package com.example.jc.myapplication.util;
 
+import android.arch.paging.PageKeyedDataSource;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -7,6 +8,7 @@ import android.util.Log;
 import com.android.volley.VolleyError;
 import com.example.jc.myapplication.ResultActivity;
 import com.example.jc.myapplication.ShowImageActivity;
+import com.example.jc.myapplication.model.ImageItem;
 import com.google.gson.Gson;
 
 import org.json.JSONObject;

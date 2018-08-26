@@ -1,11 +1,16 @@
 package com.example.jc.myapplication;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.arch.paging.PagedList;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
@@ -18,12 +23,16 @@ import android.widget.TextView;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 import com.example.jc.myapplication.model.FlatItem;
+import com.example.jc.myapplication.model.ImageItem;
 import com.example.jc.myapplication.util.DownloadImageChunkResponseListener;
 import com.example.jc.myapplication.util.JsonUtilities;
 import com.example.jc.myapplication.util.NetworkUtilities;
+import com.example.jc.myapplication.util.TagSingleton;
 import com.google.gson.Gson;
 
 //import android.support.design.widget.FloatingActionButton;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.annotation.Target;
 import java.net.URL;
@@ -84,27 +93,52 @@ public class ShowImageActivity extends AppCompatActivity {
 
 
 ////////////////////////////
-        mImages = new ArrayList<>();
-        for (String str : intent.getStringArrayListExtra("imgs")) {
-            mImages.add(JsonUtilities.getBitmapFromString(str));
-        }
-        ///////////////////////////////
+//        mImages = new ArrayList<>();
+//        for (String str : intent.getStringArrayListExtra("imgs")) {
+//            mImages.add(JsonUtilities.getBitmapFromString(str));
+//        }
+//        ///////////////////////////////
+//
+//        adapter = new ShowImagesAdapter(mImages);
 
-        adapter = new ShowImagesAdapter(mImages);
-        rvItems.setAdapter(adapter);
 
-        final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(
-                2, LinearLayoutManager.VERTICAL);
+//        final StaggeredGridLayoutManager staggeredGridLayoutManager = new StaggeredGridLayoutManager(
+//                2, StaggeredGridLayoutManager.VERTICAL);
+        final GridLayoutManager staggeredGridLayoutManager = new GridLayoutManager(this, 2);
         rvItems.setLayoutManager(staggeredGridLayoutManager);
 
-        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+
+//        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(staggeredGridLayoutManager) {
+//            @Override
+//            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
+//                NetworkUtilities.downloadImageChunk(getBaseContext(), targetID,
+//                        adapter.getItemCount(), 10, mResponseListener, requestQueue);
+//            }
+//        };
+//        rvItems.addOnScrollListener(scrollListener);
+//        rvItems.setAdapter(adapter);
+
+
+
+        //////////////////     paging
+        TagSingleton.getInstance().setContext(this);
+        TagSingleton.getInstance().setTag_id(targetID);
+
+        rvItems.setHasFixedSize(true);
+        ImageItemViewModel itemViewModel = ViewModelProviders.of(this).get(ImageItemViewModel.class);
+        final ImageItemAdapter imgAdapter = new ImageItemAdapter(this);
+
+        itemViewModel.itemPagedList.observe(this, new Observer<PagedList<ImageItem>>() {
             @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                NetworkUtilities.downloadImageChunk(getBaseContext(), targetID,
-                        adapter.getItemCount(), 10, mResponseListener, requestQueue);
+            public void onChanged(@Nullable PagedList<ImageItem> items) {
+
+                //in case of any changes
+                //submitting the items to adapter
+                imgAdapter.submitList(items);
             }
-        };
-        rvItems.addOnScrollListener(scrollListener);
+        });
+
+        rvItems.setAdapter(imgAdapter);
 
     }
 

@@ -1,5 +1,6 @@
 package com.example.jc.myapplication.util;
 
+import android.arch.paging.PageKeyedDataSource;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.jc.myapplication.GetImage;
 import com.example.jc.myapplication.model.FlatItem;
+import com.example.jc.myapplication.model.ImageItem;
 import com.example.jc.myapplication.model.PathItem;
 import com.example.jc.myapplication.model.TreeItem;
 //import com.example.jc.myapplication.model.Response;
@@ -240,7 +242,8 @@ public final class NetworkUtilities {
                                           final int offset,
                                           int count,
                                           final DownloadImageChunkResponseListener mGetResponse,
-                                          RequestQueue queue) {
+                                          RequestQueue queue,
+                                          PageKeyedDataSource.LoadInitialCallback<Integer, ImageItem> callback) {
         if (context == null) {
             Log.d(TAG, "downloadImageWithVolley: context is null");
         }
@@ -284,6 +287,7 @@ public final class NetworkUtilities {
         // add it to the RequestQueue
         queue.add(getRequest);
     }
+
 
 
 }

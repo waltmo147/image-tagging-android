@@ -1,11 +1,13 @@
 package com.example.jc.myapplication.model;
 
+import java.util.ArrayList;
+
 public class ImagesResponse {
     private String message;
-    private String[] image;
+    private ArrayList<ImageItem> image;
     private Boolean has_more;
 
-    public ImagesResponse(String message, String[] images, Boolean has_more) {
+    public ImagesResponse(String message, ArrayList<ImageItem> images, Boolean has_more) {
         this.message = message;
         this.image = images;
         this.has_more = has_more;
@@ -19,11 +21,11 @@ public class ImagesResponse {
         this.message = message;
     }
 
-    public String[] getImages() {
+    public ArrayList<ImageItem> getImages() {
         return image;
     }
 
-    public void setImages(String[] images) {
+    public void setImages(ArrayList<ImageItem> images) {
         this.image = images;
     }
 

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.util.Base64;
 import android.util.Log;
 
+import com.example.jc.myapplication.model.ImageItem;
 import com.example.jc.myapplication.model.ImagesResponse;
 import com.google.gson.Gson;
 
@@ -42,11 +43,18 @@ public final class JsonUtilities {
         Gson gson = new Gson();
         ImagesResponse response = gson.fromJson(json, ImagesResponse.class);
         Log.d("JsonUtil", "getImageListFromGetResponse: " + json);
-        for (String image_string : response.getImages()) {
-            Bitmap img = getBitmapFromString(image_string);
+        for (ImageItem item : response.getImages()) {
+            Bitmap img = getBitmapFromString(item.getImage());
             images.add(img);
         }
         return images;
+    }
+
+    public static ArrayList<ImageItem> getImageItemListFromGetResponse(ImagesResponse response) {
+        ArrayList<ImageItem> images = new ArrayList<>();
+        Gson gson = new Gson();
+
+        return response.getImages();
     }
 
     public static Bitmap getBitmapFromGetResponse(JSONObject jsonObject) {
